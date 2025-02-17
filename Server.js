@@ -38,13 +38,14 @@ app.post("/create-order", async (req, res) => {
         }
 
         const orderData = req.body;
-
+        console.log(orderData);
         const response = await axios.post(SF_ORDER_API, orderData, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
                 "Content-Type": "application/json"
             }
         });
+        console.log(res);
 
         res.json({ success: true, message: "Order created!", data: response.data });
     } catch (error) {
