@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(cors());
 
 let accessToken = "";
-
+const SF_ORDER_API = `${process.env.SF_INSTANCE_URL}/services/apexrest/updateProductSchedule`;
 // Function to authenticate with Salesforce
 async function authenticateSalesforce() {
     try {
@@ -39,7 +39,7 @@ app.post("/create-order", async (req, res) => {
 
         const orderData = req.body;
 
-        const response = await axios.post(process.env.SF_ORDER_API, orderData, {
+        const response = await axios.post(SF_ORDER_API, orderData, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
                 "Content-Type": "application/json"
