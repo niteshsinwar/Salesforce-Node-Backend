@@ -45,7 +45,7 @@ app.post("/create-order", async (req, res) => {
                 "Content-Type": "application/json"
             }
         });
-        console.log(res);
+        console.log(response.data);
 
         res.json({ success: true, message: "Order created!", data: response.data });
     } catch (error) {
