@@ -1,6 +1,6 @@
-require("dotenv").config();
 const express = require("express");
 const axios = require("axios");
+require("dotenv").config();
 const cors = require("cors");
 
 const app = express();
@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(cors());
 
 let accessToken = "";
-const SF_ORDER_API = `${process.env.SF_INSTANCE_URL}/services/apexrest/updateProductSchedule`;
+
 // Function to authenticate with Salesforce
 async function authenticateSalesforce() {
     try {
@@ -29,31 +29,37 @@ async function authenticateSalesforce() {
     }
 }
 
+// Login API to get access token
+app.get("/login", async (req, res) => {
+    try {
+        if (!accessToken) {
+            await authenticateSalesforce();
+        }
+        res.json({ accessToken });  // Send the access token back to the client
+    } catch (error) {
+        console.error("Error during login:", error);
+        res.status(500).json({ message: "Failed to authenticate with Salesforce." });
+    }
+});
+
 // Order API endpoint
 app.post("/create-order", async (req, res) => {
     try {
-        console.log("API Triggered");
-        // Authenticate if no token exists
         if (!accessToken) {
             await authenticateSalesforce();
         }
 
         const orderData = req.body;
-        console.log(orderData);
-        if (!Array.isArray(orderData) || orderData.length === 0) {
-            return res.status(400).json({ success: false, message: "Invalid or empty order list" });
-        }
-        const response = await axios.post(SF_ORDER_API, orderData, {
+        const response = await axios.post(`${process.env.SF_INSTANCE_URL}/services/apexrest/updateProductSchedule`, orderData, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
                 "Content-Type": "application/json"
             }
         });
-        console.log(response.data);
 
         res.json({ success: true, message: "Order created!", data: response.data });
     } catch (error) {
-        console.error("❌ Error creating order:", error.response?.data || error.message);
+        console.error("Error creating order:", error);
         res.status(500).json({ success: false, message: "Failed to create order" });
     }
 });
