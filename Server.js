@@ -32,6 +32,7 @@ async function authenticateSalesforce() {
 // Order API endpoint
 app.post("/create-order", async (req, res) => {
     try {
+        console.log("API Triggered");
         // Authenticate if no token exists
         if (!accessToken) {
             await authenticateSalesforce();
