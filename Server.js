@@ -39,6 +39,9 @@ app.post("/create-order", async (req, res) => {
 
         const orderData = req.body;
         console.log(orderData);
+        if (!Array.isArray(orderData) || orderData.length === 0) {
+            return res.status(400).json({ success: false, message: "Invalid or empty order list" });
+        }
         const response = await axios.post(SF_ORDER_API, orderData, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
